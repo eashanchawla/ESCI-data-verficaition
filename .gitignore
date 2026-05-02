@@ -1,0 +1,9 @@
+.vscode/*
+data/*
+*.pdf
+*.csv
+*.egg-info/*
+.env
+/env/*
+*.ini
+*.DS_Store

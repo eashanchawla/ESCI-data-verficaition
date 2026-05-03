@@ -7,3 +7,4 @@ data/*
 /env/*
 *.ini
 *.DS_Store
+*/__pycache__/*

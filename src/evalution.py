@@ -1,3 +1,7 @@
+'''
+Purpose: helper functions to evaluate pairs and some statistics
+'''
+
 from time import time
 from tqdm import tqdm
 import pandas as pd

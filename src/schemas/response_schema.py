@@ -1,3 +1,7 @@
+'''
+Purpose: schema for responses from the LLM
+'''
+
 from pydantic import BaseModel, Field
 from typing import List
 

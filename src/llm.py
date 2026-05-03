@@ -1,7 +1,10 @@
+'''
+Purpose: interaction layer with LLMs
+'''
+
 from litellm import completion
 from src.schemas.response_schema import MyResponse
 from src.prompts import EVALUATION_PROMPT
-import json
 
 class ModelEvaluator:
     def __init__(self, model_name: str):

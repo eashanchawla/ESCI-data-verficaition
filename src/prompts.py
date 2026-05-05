@@ -1,8 +1,6 @@
 EVALUATION_PROMPT = '''
-You are an expert auditing labeled data with user search queries 
-and returned product matches. 
-Your goal is to tell us if product and query information matches 
-or not. 
+You are an expert auditing labeled data with user search queries and returned product matches. 
+Your goal is to tell us if product and query information matches or not. 
 
 1. You must only flag a conflict if the product explicitly states a different value for the same attribute type the query specified. Following attributes can create conflicts:
     - Quantity / count (eg query: 100 pack, product: 32 pack = conflict)

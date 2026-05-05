@@ -73,3 +73,16 @@ def score_against_human(merged_df: pd.DataFrame) -> None:
     cm = confusion_matrix(clean_data['Conflict_Found_GT'].astype(bool), clean_data['conflict_found'].astype(bool))
     ConfusionMatrixDisplay(cm, display_labels=["No Conflict", "Conflict"]).plot()
     plt.show()
+
+DISPLAY_COLS = ["query", "title", "human_label", "Conflict_Found_GT", 
+                "conflict_found", "reasoning", "reformulated_query"]
+
+# Written by AI completely
+def show(df, n=None):
+    """Tight, presentation-friendly view."""
+    view = df[DISPLAY_COLS] if n is None else df[DISPLAY_COLS].head(n)
+    return view.style.set_properties(**{
+        'text-align': 'left',
+        'white-space': 'pre-wrap',
+        'max-width': '400px',
+    })

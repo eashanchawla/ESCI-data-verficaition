@@ -71,4 +71,4 @@ def build_product_context(row: pd.Series) -> str:
         value = row.get(field)
         if pd.notna(value) and str(value).strip():
             parts.append(f"{label}: {str(value).strip()}")
-    return "\n".join(parts)
+    return "\n\t".join(parts)

@@ -6,6 +6,7 @@ from time import time
 from pathlib import Path
 from tqdm import tqdm
 from src.llm import ModelEvaluator
+from src.data_loader import build_product_context
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -30,7 +31,7 @@ def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator) -> pd.DataFra
             desc = str(row.get('product_description', ''))
             brand = str(row.get('product_brand', ''))
             bullets = str(row.get('product_bullet_point', ''))
-            solution = model_evaluator.evaluate_pair(q, title, desc, brand, bullets)
+            solution = model_evaluator.evaluate_pair(q, build_product_context(row))
             elapsed_time = time() - start
             record = {
                 'example_id': row['example_id'],
@@ -40,7 +41,7 @@ def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator) -> pd.DataFra
                 'product_features': solution.product_features,
                 'conflict_found': solution.conflict_found,
                 'reasoning': solution.reasoning,
-                'acceptable': solution.acceptable,
+                # 'acceptable': solution.acceptable,
                 'reformulated_query': solution.reformulated_query,
                 'latency_sec': round(elapsed_time, 2),
                 'error': None
@@ -60,7 +61,7 @@ def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator) -> pd.DataFra
                 'product_features': None,
                 'conflict_found': None,
                 'reasoning': None,
-                'acceptable': None,
+                # 'acceptable': None,
                 'reformulated_query': None,
                 'latency_sec': None,
                 'error': str(e)
@@ -96,13 +97,13 @@ def score_against_human(merged_df: pd.DataFrame) -> None:
     ConfusionMatrixDisplay(cm, display_labels=["No Conflict", "Conflict"]).plot()
     plt.show()
 
-DISPLAY_COLS = ["query", "title", "human_label", "Conflict_Found_GT", 
-                "conflict_found", "reasoning", "reformulated_query"]
+DISPLAY_COLS = ["example_id", "query", "title", "human_label", "Conflict_Found_GT", 
+                "conflict_found", "reasoning", "reformulated_query", "error"]
 
 # Written by AI completely
-def show(df, n=None):
+def show(df, display_cols=DISPLAY_COLS, n=None):
     """Tight, presentation-friendly view."""
-    view = df[DISPLAY_COLS] if n is None else df[DISPLAY_COLS].head(n)
+    view = df[display_cols] if n is None else df[display_cols].head(n)
     return view.style.set_properties(**{
         'text-align': 'left',
         'white-space': 'pre-wrap',

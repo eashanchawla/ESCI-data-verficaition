@@ -4,16 +4,14 @@
 - [X] Initial commit
 - [X] Code cleanup
 - [X] Prompt changes
-- [ ] Add function doc strings
-- [ ] Handling missing data (product id: 0547238967 appears in multiple locales -- and has differet vals we see one in jp with null values)
+- [X] Add function doc strings
+- [ ] Handling missing data (product id: 0547238967 appears in multiple locales -- and has differet vals we see one in jp with null values) 
 - [ ] Handling cases where nothing matches? And the product to query match is bad to begin with but still marked E?
 - [ ] Performance evaluation per query
-- [ ] Adding reasoning dimension in model output when conflict found
-- [ ] Same prompt with different model
-- [ ] Second prompt with re-ordered schema 
+- [X] Same prompt with different model
+- [X] Second prompt with re-ordered schema 
 - [ ] Second critique prompt
-- [ ] Final documentation / Presentation cleanup
-- [ ] unseen_data_test
+- [ ] Final documentation / Presentation cleanup (IN PROGRESS)
 - [X] Evaluation code to create report for comparision between human labels and LLM generated labels 
 - [ ] Pass through ruff or black for linting
 - [ ] use standard logger package from python to do logging (Overkill for this)

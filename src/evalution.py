@@ -3,12 +3,14 @@ Purpose: helper functions to evaluate pairs and some statistics
 '''
 
 from time import time
+from pathlib import Path
 from tqdm import tqdm
-import pandas as pd
-from litellm import completion
 from src.llm import ModelEvaluator
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import pandas as pd
 
-def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator):
+def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator) -> pd.DataFrame:
     results_list = []
     for idx, row in tqdm(subset.iterrows(), total=len(subset), desc='Processing'):
         try:
@@ -54,3 +56,20 @@ def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator):
                 'error': str(e)
             }
             results_list.append(record)
+    return pd.DataFrame(results_list)
+
+def run_experiment(df: pd.DataFrame, evaluator: ModelEvaluator, run_name: str | Path) -> pd.DataFrame:
+    '''Wrapper around predict, could help with logging if I get time for it'''
+    save_path = Path(f'../data/processed/{run_name}.csv')
+    results = predict(df, evaluator)
+    results.to_csv(save_path, index=False)
+    # logging.info()
+    return results
+
+def score_against_human(merged_df: pd.DataFrame) -> None:
+    '''Score report'''
+    clean_data = merged_df.dropna(subset=['Conflict_Found_GT', 'conflict_found'])
+    print(classification_report(clean_data['Conflict_Found_GT'].astype(bool), clean_data['conflict_found'].astype(bool), target_names=["No Conflict", "Conflict"]))
+    cm = confusion_matrix(clean_data['Conflict_Found_GT'].astype(bool), clean_data['conflict_found'].astype(bool))
+    ConfusionMatrixDisplay(cm, display_labels=["No Conflict", "Conflict"]).plot()
+    plt.show()

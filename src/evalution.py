@@ -11,6 +11,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator) -> pd.DataFrame:
+    '''
+    Loop through dataframe passing through current iteration of ModelEvaluator prompt
+    
+    Args:
+        subset: current dataframe to iterate through and pass through LLM
+        model_evaluator: initialized model with a system prompt and settings
+
+    Returns:
+        Dataframe that has the outputs from the LLM runs
+    '''
     results_list = []
     for idx, row in tqdm(subset.iterrows(), total=len(subset), desc='Processing'):
         try:
@@ -59,15 +69,27 @@ def predict(subset: pd.DataFrame, model_evaluator: ModelEvaluator) -> pd.DataFra
     return pd.DataFrame(results_list)
 
 def run_experiment(df: pd.DataFrame, evaluator: ModelEvaluator, run_name: str | Path) -> pd.DataFrame:
-    '''Wrapper around predict, could help with logging if I get time for it'''
-    save_path = Path(f'../data/processed/{run_name}.csv')
+    '''
+    Wrapper around predict, could help with logging if I get time for it
+    
+    Args:
+        run_name: saves run_name.csv in the /data/processed file
+        df: dataframe to pass through the LLM
+        evaluator: current model setup with initialized system prompt and other settings
+    
+    Returns:
+        df with results from the LLM
+    '''
+    save_path = Path(f'../data/processed/{run_name}.csv') #TODO: maybe extract this out to the config so I don't have to maintain brittle paths
     results = predict(df, evaluator)
     results.to_csv(save_path, index=False)
     # logging.info()
     return results
 
 def score_against_human(merged_df: pd.DataFrame) -> None:
-    '''Score report'''
+    '''
+    Generate a report of metrics on how the model performs against human labels. Assumes that merged df contains human labels'''
+    #TODO: I want to make this better and also return query level performance? 
     clean_data = merged_df.dropna(subset=['Conflict_Found_GT', 'conflict_found'])
     print(classification_report(clean_data['Conflict_Found_GT'].astype(bool), clean_data['conflict_found'].astype(bool), target_names=["No Conflict", "Conflict"]))
     cm = confusion_matrix(clean_data['Conflict_Found_GT'].astype(bool), clean_data['conflict_found'].astype(bool))

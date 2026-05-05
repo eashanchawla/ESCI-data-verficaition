@@ -23,7 +23,7 @@ class ModelEvaluator:
                 {"role": "user", "content": user_prompt}
             ],
             api_base='http://localhost:11434',
-            response_format=self.response_schema
+            response_format=self.response_schema, num_retries=3
         )
         solution = self.response_schema.model_validate_json(response['choices'][0]['message'].content)
         return solution

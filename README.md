@@ -4,6 +4,7 @@
 - [X] Initial commit
 - [X] Code cleanup
 - [X] Prompt changes
+- [ ] Add function doc strings
 - [ ] Handling missing data (product id: 0547238967 appears in multiple locales -- and has differet vals we see one in jp with null values)
 - [ ] Handling cases where nothing matches? And the product to query match is bad to begin with but still marked E?
 - [ ] Performance evaluation per query

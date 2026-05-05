@@ -22,9 +22,6 @@ def merge_examples_products(df_examples: pd.DataFrame, df_products: pd.DataFrame
     )
     return df_merged
 
-def random_sample():
-    return NotImplementedError
-
 def get_evaluation_dataset(df_examples: pd.DataFrame, df_products: pd.DataFrame, target_queries: Iterable[str] | None=None) -> pd.DataFrame:
     df_merged = pd.merge(
         df_examples, df_products, how='left', on=['product_locale', 'product_id']

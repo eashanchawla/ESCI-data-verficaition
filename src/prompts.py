@@ -38,12 +38,28 @@ PASS1_PROMPT = '''
 You are an expert extracting and comparing features between search queries and product listings.
 
 For the given query and product information:
-1. Extract all distinct features/specifications from the query.
-2. Extract all features/specifications from the product information.
-3. For each query feature, find the corresponding product feature and grade it:
-   - "match" if the product confirms the query feature
-   - "contradiction" if the product explicitly states a different value for the same attribute
-   - "missing" if the product does not mention anything about that feature
+1. Break the query down into specific dimensions/categories (e.g., 'Core Product', 'Quantity', 'Brand', 'Voltage', 'Finish', 'Size').
+2. For EACH query dimension, extract the specific value required by the query.
+3. Find the SINGLE BEST corresponding value in the product information for that EXACT dimension.
+4. Grade each dimension's alignment:
+   - "match" if the product confirms the query's value for that dimension
+   - "contradiction" if the product explicitly states a DIFFERENT VALUE for that dimension
+   - "missing" if the product does not mention anything about that dimension at all
+
+Product type mismatch rule: If the 'Core Product' dimension differs (e.g., query wants "screwdriver kit", product is "battery charger"), this is a CONTRADICTION, not "missing".
+
+Important:
+- Only compare a query dimension against the same dimension in the product. Do NOT compare 'Quantity' to 'Voltage' or 'Core Product' to 'Color'.
+- If the product does not mention the dimension, set product_feature to null and status to "missing".
+
+Example:
+Query: "aa batteries 100 pack"
+Product Title: "Energizer AA Batteries, 50 Count"
+
+Correct alignment:
+- dimension: "Core Product", query_feature: "batteries", product_feature: "Batteries", status: "match"
+- dimension: "Battery Type", query_feature: "aa", product_feature: "AA", status: "match"
+- dimension: "Quantity", query_feature: "100 pack", product_feature: "50 Count", status: "contradiction"
 
 Do NOT make a final judgment. Just extract and align.
 '''
@@ -51,21 +67,26 @@ Do NOT make a final judgment. Just extract and align.
 PASS2_PROMPT = '''
 You are an expert making final judgments on query-product relevance.
 
-You will receive a query and a feature alignment from a previous analysis. Some features 
-were flagged as "contradiction". Your job is to re-evaluate each flagged contradiction 
+You will receive a query and a feature alignment from a previous analysis. Some features
+were flagged as "contradiction". Your job is to re-evaluate each flagged contradiction
 and determine if it is a GENUINE conflict or a false alarm.
 
-Common false alarms to watch for:
-- Same quantity, different wording: "100 pack" vs "100 count" vs "100-pack" are NOT conflicts
-- Same dimensions, different notation: "8.5 x 11" vs "8-1/2 x 11" vs "8.5" x 11"" are NOT conflicts
-- Same finish, different wording: "glossy" vs "gloss finish" vs "high gloss" are NOT conflicts
-- Extra info in product: product having MORE than what query asks for is NOT a conflict
+False alarms (NOT genuine conflicts):
+- Same value, different notation: "8.5 x 11" vs "8-1/2 x 11" are the SAME dimensions
+- Same value, different wording: "100 pack" vs "100 count" vs "100-pack" are the SAME quantity
+- Same finish, synonym: "glossy" vs "gloss finish" vs "high gloss" are the SAME finish
+- Extra features: product having MORE than what query asks for is NOT a conflict
+- Unrelated comparison: if a query feature was compared against a product feature of a completely different attribute type (e.g., quantity vs voltage, brand vs color), ignore it - it is a bad alignment, not a genuine conflict
 
-A genuine conflict is when the actual VALUE differs: 100 vs 50, AA vs AAA, glossy vs matte, 
-dewalt vs enertwist.
+Genuine conflicts (these ARE real):
+- Different NUMBERS: 100 vs 50, 100 vs 60, 8v vs 12v
+- Different TYPES: AA vs AAA, screwdriver vs battery charger
+- Different FINISHES with opposite meanings: glossy vs matte, gloss vs matte
+- Different BRANDS: dewalt vs enertwist
+
 
 If after re-evaluation no genuine conflicts remain, set conflict_found to False.
-If genuine conflicts exist, set conflict_found to True and reformulate the query.
+If genuine conflicts exist, set conflict_found to True and reformulate the query to remove explicit conflict.
 '''
 
 

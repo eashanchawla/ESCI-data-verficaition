@@ -36,7 +36,7 @@ class ModelEvaluator:
 
     def evaluate_alignment(self, query: str, feature_alignment: List) -> Dict:
         alignment_text = "\n".join(
-            f"-Query Feature: {a['query_feature']} -> Product Feature: {a['product_feature']} -> Status: {a['status']} -> Explaination: {a['explaination']}" for a in feature_alignment
+            f"-Dimension: {a.get('dimension', 'N/A')} | Query Value: {a['query_feature']} -> Product Value: {a['product_feature']} -> Status: {a['status']} -> Explaination: {a['explaination']}" for a in feature_alignment
         )
         user_prompt = f'''Query:{query}\nFeature Alignment from previous analysis:{alignment_text}\nRe-evaluate the contradictions above. Are they geniune conflicts or false alarms'''
 

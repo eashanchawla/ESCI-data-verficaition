@@ -15,8 +15,9 @@ class MyResponse(BaseModel):
     reformulated_query: str | None = Field(description="If conflict_found is True, write a search query replacing the exact contradiction words with product attributes, else output null.")
 
 class FeatureAlignment(BaseModel):
-    query_feature: str = Field(description="A single feature from the query")
-    product_feature: str | None = Field(description="The corresponding value found in the product info, or null if not mentioned")
+    dimension: str = Field(description="The category of the feature (e.g., 'Core Product', 'Quantity', 'Brand', 'Voltage', 'Size')")
+    query_feature: str = Field(description="The specific value required by the query for this dimension")
+    product_feature: str | None = Field(description="The corresponding value found in the product for this dimension, or null if not mentioned")
     status: str = Field(description="One of: 'match', 'contradiction', 'missing'.")
     explaination: str = Field(description="Brief explanation of why this status was chosen. Must be in English.")
 
